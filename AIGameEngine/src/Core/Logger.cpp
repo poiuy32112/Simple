@@ -1,6 +1,7 @@
 #include "Logger.h"
 #include <iostream>
 #include <ctime>
+#include <Windows.h>
 
 std::ofstream Logger::logFile;
 bool Logger::isInitialized = false;
@@ -9,9 +10,18 @@ void Logger::Init(const std::string& filename)
 {
     if (!isInitialized)
     {
+        // è®¾ç½®æ§åˆ¶å°è¾“å‡ºä¸ºUTF-8ç¼–ç 
+        SetConsoleOutputCP(CP_UTF8);
+        
+        // ä»¥UTF-8ç¼–ç æ‰“å¼€æ–‡ä»¶
         logFile.open(filename, std::ios::out | std::ios::app);
+        
+        // å†™å…¥UTF-8 BOM
+        unsigned char bom[] = { 0xEF, 0xBB, 0xBF };
+        logFile.write(reinterpret_cast<char*>(bom), sizeof(bom));
+        
         isInitialized = true;
-        Info("ÈÕÖ¾ÏµÍ³³õÊ¼»¯³É¹¦");
+        Info("Log system initialization successful");
     }
 }
 
@@ -22,27 +32,27 @@ void Logger::Log(Level level, const std::string& message)
         Init();
     }
 
-    // »ñÈ¡µ±Ç°Ê±¼ä
+    // è·å–å½“å‰æ—¶é—´
     time_t now = time(0);
     char timeStr[26];
     ctime_s(timeStr, sizeof(timeStr), &now);
-    timeStr[24] = '\0'; // ÒÆ³ı»»ĞĞ·û
+    timeStr[24] = '\0'; // ç§»é™¤æ¢è¡Œç¬¦
 
-    // ×ª»»ÈÕÖ¾¼¶±ğÎª×Ö·û´®
+    // è½¬æ¢æ—¥å¿—çº§åˆ«ä¸ºå­—ç¬¦ä¸²
     std::string levelStr;
     switch (level)
     {
-    case Level::Info:    levelStr = "ĞÅÏ¢"; break;
-    case Level::Warning: levelStr = "¾¯¸æ"; break;
-    case Level::Error:   levelStr = "´íÎó"; break;
+    case Level::Info:    levelStr = "ä¿¡æ¯"; break;
+    case Level::Warning: levelStr = "è­¦å‘Š"; break;
+    case Level::Error:   levelStr = "é”™è¯¯"; break;
     }
 
-    // Ğ´ÈëÈÕÖ¾
+    // å†™å…¥æ—¥å¿—
     std::string logMessage = std::string(timeStr) + " [" + levelStr + "] " + message + "\n";
     logFile << logMessage;
     logFile.flush();
 
-    // Í¬Ê±Êä³öµ½¿ØÖÆÌ¨
+    // åŒæ—¶è¾“å‡ºåˆ°æ§åˆ¶å°
     std::cout << logMessage;
 }
 

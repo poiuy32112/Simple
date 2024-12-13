@@ -7,6 +7,12 @@
     <Filter Include="src\Core">
       <UniqueIdentifier>{5c0d591c-e8d7-4284-b2b4-9ba057024db4}</UniqueIdentifier>
     </Filter>
+    <Filter Include="src\Platform">
+      <UniqueIdentifier>{a4d54534-9648-40ae-9c1a-81d8dd070588}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="src\Platform\Windows">
+      <UniqueIdentifier>{21fbfd11-5bb8-4d05-907e-c1fd011806f5}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\main.cpp">
@@ -14,6 +20,9 @@
     </ClCompile>
     <ClCompile Include="src\Core\Logger.cpp">
       <Filter>src\Core</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Platform\Windows\WindowsWindow.cpp">
+      <Filter>src\Platform\Windows</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -25,6 +34,12 @@
     </ClInclude>
     <ClInclude Include="src\Core\EventDispatcher.h">
       <Filter>src\Core</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Core\Window.h">
+      <Filter>src\Core</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Platform\Windows\WindowsWindow.h">
+      <Filter>src\Platform\Windows</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

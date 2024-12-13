@@ -1,40 +1,66 @@
 #include "Core/EventDispatcher.h"
 #include "Core/Logger.h"
+#include "Core/Window.h"
 #include <Windows.h>
 #include <iostream>
+#include <memory>
 
 void OnWindowResize(Event& e)
 {
     WindowResizeEvent& resizeEvent = static_cast<WindowResizeEvent&>(e);
-    Logger::Info("´°¿Ú´óĞ¡¸Ä±ä: " + std::to_string(resizeEvent.GetWidth()) +
+    Logger::Info("çª—å£å¤§å°æ”¹å˜: " + std::to_string(resizeEvent.GetWidth()) +
         "x" + std::to_string(resizeEvent.GetHeight()));
 }
 
 void OnKeyPressed(Event& e)
 {
     KeyPressedEvent& keyEvent = static_cast<KeyPressedEvent&>(e);
-    Logger::Info("°´¼ü°´ÏÂ: " + std::to_string(keyEvent.GetKeyCode()));
+    Logger::Info("æŒ‰é”®æŒ‰ä¸‹: " + std::to_string(keyEvent.GetKeyCode()));
 }
 
 int main()
 {
     Logger::Init();
-    Logger::Info("ÓÎÏ·ÒıÇæÆô¶¯");
+    Logger::Info("æ¸¸æˆå¼•æ“å¯åŠ¨");
 
-    // ×¢²áÊÂ¼ş¼àÌıÆ÷
+    // åˆ›å»ºçª—å£
+    std::unique_ptr<Window> window(Window::Create("æˆ‘çš„æ¸¸æˆå¼•æ“", 1280, 720));
+    if (!window) {
+        Logger::Error("çª—å£åˆ›å»ºå¤±è´¥");
+        return -1;
+    }
+    
+    // è®¾ç½®äº‹ä»¶å›è°ƒ
+    window->SetEventCallback([](Event& e) {
+        EventDispatcher::Get().Dispatch(e);
+    });
+
+    // æ³¨å†Œäº‹ä»¶ç›‘å¬å™¨
     EventDispatcher::Get().AddListener(EventType::WindowResize, OnWindowResize);
     EventDispatcher::Get().AddListener(EventType::KeyPressed, OnKeyPressed);
 
-    // Ä£ÄâÒ»Ğ©ÊÂ¼ş
-    WindowResizeEvent resizeEvent(1280, 720);
-    EventDispatcher::Get().Dispatch(resizeEvent);
+    // ä¸»å¾ªç¯
+    bool running = true;
+    MSG msg = {};
+    while (running) 
+    {
+        while (PeekMessage(&msg, nullptr, 0, 0, PM_REMOVE))
+        {
+            if (msg.message == WM_QUIT)
+            {
+                running = false;
+                break;
+            }
+            TranslateMessage(&msg);
+            DispatchMessage(&msg);
+        }
 
-    KeyPressedEvent keyEvent(65); // 'A' ¼ü
-    EventDispatcher::Get().Dispatch(keyEvent);
+        if (running)
+        {
+            window->OnUpdate();
+        }
+    }
 
-    MessageBox(NULL, L"Hello World!", L"ÎÒµÄÓÎÏ·ÒıÇæ", MB_OK);
-
-    Logger::Info("ÓÎÏ·ÒıÇæ¹Ø±Õ");
-    std::cin.get();
+    Logger::Info("æ¸¸æˆå¼•æ“å…³é—­");
     return 0;
 }
